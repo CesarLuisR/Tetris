@@ -1,6 +1,20 @@
 #include <iostream>
 #include "Grid.h"
 
+// Some context:
+// We use (y, x) in a lot of functions
+// This is cause y refers to rows (the x axis) and x refers to cols (the y axis)
+// Example:
+//   x1 x2 x3
+// [ [] [] [] ] y1
+// [ [] [] [] ] y2
+// [ [] [] [G] ] y3
+
+// To get the G: [y3, x3]
+// Why is this? Cause of the loop
+// We first iterate the rows, in this case de Ys (You could understand this aswell as height (y) and width (x))
+// Then we iterate the columnts, in this case de Xs
+
 Grid::Grid(Coord refPoint) : refPoint(refPoint) {
 	InitMap();
 }
