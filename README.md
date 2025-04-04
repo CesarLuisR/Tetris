@@ -13,13 +13,13 @@ You can build this project using:
   ```
   
   ```⚠️ Nice try running this on Linux or macOS environments :)```
-It was definitely born and raised on Windows. Cross-platform? Maybe later...
+- It was definitely born and raised on Windows. Cross-platform? Maybe later...
 
 🕹️ Controls
-↑ – Rotate block
-↓ – Alocate block
-→ – Move block right
-← – Move block left
+- ↑ – Rotate block
+- ↓ – Alocate block
+- → – Move block right
+- ← – Move block left
 
 You can change game-in variables like (grid width, grid height, block speed) in the CONSTANTS file 
 
