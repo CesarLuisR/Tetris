@@ -21,6 +21,8 @@ It was definitely born and raised on Windows. Cross-platform? Maybe later...
 → – Move block right
 ← – Move block left
 
+You can change game-in variables like (grid width, grid height, block speed) in the CONSTANTS file 
+
 ![image](https://github.com/user-attachments/assets/e5712c3b-dffb-4bd0-9ae4-e8f353123f4b)
 
 📚 License
