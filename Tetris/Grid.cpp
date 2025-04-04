@@ -1,9 +1,8 @@
 #include <iostream>
 #include "Grid.h"
-#include "ConsoleUtils.h"
 
 Grid::Grid(Coord refPoint) : refPoint(refPoint) {
-	CreateBorders();
+	InitMap();
 }
 
 const GridBlock& Grid::GetGridData(int col, int row) {
@@ -14,10 +13,18 @@ const Coord& Grid::GetGridRefPoint() {
 	return refPoint;
 }
 
-const AnalysisResult& Grid::Analyze() {
+const AnalysisResult Grid::Analyze() {
 	std::vector<int> rows;
+
+	// End case
+	int x = GRID_COLS / 2; 
+	int y = 2;
+
+	if (GetGridData(y, x).GetType() != BlockType::None) 
+		return { GridState::End, {} };
 	
-	for (int i = 0; i < GRID_ROWS; i++) {
+	// Other cases
+	for (int i = GRID_ROWS - 1; i > -1; --i) {
 		if (i == 0 || i == GRID_ROWS - 1) continue;
 
 		bool isComplete = true;
@@ -39,29 +46,72 @@ const AnalysisResult& Grid::Analyze() {
 	return { GridState::Continue, rows };
 };
 
+void Grid::RowCleaning(const std::vector<int>& rows) {
+	for (int row : rows) {
+		for (int i = GRID_COLS - 1; i > -1; --i) {
+			if (i == 0 || i == GRID_COLS - 1) continue;
+
+			SetPos(row, i, BlockType::None, "", -1);
+		}
+	}
+};
+
+void Grid::UpdatePlacedBlocks(const std::vector<int>& rows) {
+	std::vector<Tetrominoe> newPlacedBlocks;
+
+	for (const Tetrominoe& block : m_PlacedBlocks) {
+		std::vector<Coord> newCoordsUp;
+		std::vector<Coord> newCoordsDown;
+
+		for (Coord cd : block.GetShape()) {
+			int y = cd.y + block.GetAxisLocation().y;
+
+			if (y < rows.back()) newCoordsUp.emplace_back(cd);
+			else if (y > rows.front()) newCoordsDown.emplace_back(cd);
+		}
+					
+		if (newCoordsDown.size() > 0)
+			newPlacedBlocks.emplace_back(Tetrominoe(block.m_Color, newCoordsDown, block.GetAxisLocation()));
+		if (newCoordsUp.size() > 0) 
+			newPlacedBlocks.emplace_back(Tetrominoe(block.m_Color, newCoordsUp, block.GetAxisLocation()));
+	}
+
+	m_PlacedBlocks = newPlacedBlocks;
+}
+
+void Grid::UpdateGrid() {
+	InitMap();
+	for (const auto& block : m_PlacedBlocks) {
+		for (const auto& coord : block.GetShape()) {
+			int x = block.GetAxisLocation().x + coord.x;
+			int y = block.GetAxisLocation().y + coord.y;
+
+			SetPos(y, x, BlockType::TetrominoeBlock, block.m_Color, block.blockId);
+		}
+	}
+}
+
 bool Grid::AbleToSet(int col, int row) {
 	if (GetGridData(col, row).GetType() == BlockType::None) return true;
 
 	if (GetGridData(col, row).GetType() == BlockType::Border) return false;
 
-	for (int i = m_PlacedCoords.size() - 1; i >= 0; i--) 
-		if (m_PlacedCoords[i].x == row && m_PlacedCoords[i].y == col) 
-			return false;
+	if (GetGridData(col, row).cellId != m_MovingBlock.blockId) return false;
 
 	return true;
 }
 
-void Grid::SetPos(int col, int row, const BlockType& type, const std::string& color) {
-	m_GridData[col][row] = GridBlock(type, color);
+void Grid::SetPos(int col, int row, const BlockType& type, const std::string& color, int blockId) {
+	m_GridData[col][row] = GridBlock(type, color, blockId);
 }
 
-void Grid::CreateBorders() {
+void Grid::InitMap() {
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; j++) {
 			if (i != 0 && j != 0 && i != GRID_ROWS - 1 && j != GRID_COLS - 1)
-				Grid::SetPos(i, j, BlockType::None, "");
+				Grid::SetPos(i, j, BlockType::None, "", -1);
 			else 
-				Grid::SetPos(i, j, BlockType::Border, "");
+				Grid::SetPos(i, j, BlockType::Border, "", -1);
 		}
 	}
 }
@@ -69,7 +119,7 @@ void Grid::CreateBorders() {
 void Grid::CleanAll() {
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; j++) {
-			Grid::SetPos(i, j, BlockType::None, "");
+			Grid::SetPos(i, j, BlockType::None, "", -1);
 		}
 	}
 }
@@ -88,18 +138,8 @@ const BlockStatus& Grid::SetTetrominoePos(int row, int col) {
 	}
 
 	if (isAbleToSet == false) {
-		std::array<Coord, 4> returningCoords;
-		int counter = 0;
-
-		for (const Coord& coord : coords) {
-			int	x = m_MovingBlock.GetAxisLocation().x + coord.x;
-			int y = m_MovingBlock.GetAxisLocation().y + coord.y;
-
-			returningCoords[counter++] = Coord{ x, y };
-		}
-
-		return { true, returningCoords };
-	};
+		return { true, m_MovingBlock };
+	}
 
 	// Clean the tetrominoe 
 	for (const Coord& coord : coords) {
@@ -107,7 +147,7 @@ const BlockStatus& Grid::SetTetrominoePos(int row, int col) {
 		int y = m_MovingBlock.GetAxisLocation().y + coord.y;
 
 		// { Row, Col, Type }
-		Grid::SetPos(y, x, BlockType::None, "");
+		Grid::SetPos(y, x, BlockType::None, "", -1);
 	}
 
 	// Then we update its position in the grid
@@ -120,10 +160,10 @@ const BlockStatus& Grid::SetTetrominoePos(int row, int col) {
 		int y = m_MovingBlock.GetAxisLocation().y + coord.y;
 
 		// { Row, Col, Type }
-		Grid::SetPos(y, x, BlockType::TetrominoeBlock, m_MovingBlock.m_Color);
+		Grid::SetPos(y, x, BlockType::TetrominoeBlock, m_MovingBlock.m_Color, m_MovingBlock.blockId);
 	}
 
-	BlockStatus res = { false, {0, 0} };
+	BlockStatus res = { false, m_MovingBlock };
 	return res;
 }
 
@@ -147,7 +187,7 @@ void Grid::RotateBlock() {
 		int y = m_MovingBlock.GetAxisLocation().y + coord.y;
 
 		// { Row, Col, Type }
-		Grid::SetPos(y, x, BlockType::None, "");
+		Grid::SetPos(y, x, BlockType::None, "", -1);
 	}
 
 	m_MovingBlock.SetShape(rotationCoords);
@@ -158,7 +198,7 @@ void Grid::RotateBlock() {
 		int y = m_MovingBlock.GetAxisLocation().y + coord.y;
 
 		// { Row, Col, Type }
-		Grid::SetPos(y, x, BlockType::TetrominoeBlock, m_MovingBlock.m_Color);
+		Grid::SetPos(y, x, BlockType::TetrominoeBlock, m_MovingBlock.m_Color, m_MovingBlock.blockId);
 	}
 }
 
@@ -167,7 +207,6 @@ const Tetrominoe& Grid::CreateBlock() {
 	int xRelativeAxisCenter = GRID_COLS / 2; 
 	// The tetrominoe appears in the second row
 	int yAxis = 2;
-	//int xAbsoluteAxisCenter = refPoint.x + xRelativeAxisCenter;
 
 	// Create the random block
 	Coord relativeCoord = { xRelativeAxisCenter, yAxis };
@@ -181,19 +220,21 @@ const Tetrominoe& Grid::CreateBlock() {
 		int y = m_MovingBlock.GetAxisLocation().y + coord.y;
 
 		// { Col, Row, Type }
-		Grid::SetPos(y, x, BlockType::TetrominoeBlock, m_MovingBlock.m_Color);
+		Grid::SetPos(y, x, BlockType::TetrominoeBlock, m_MovingBlock.m_Color, m_MovingBlock.blockId);
 	}
 
 	return m_MovingBlock;
 }
 
-const BlockStatus& Grid::NaturalMovement() {
+BlockStatus Grid::NaturalMovement(const Tetrominoe& block) {
+	m_MovingBlock = block;
+
 	BlockStatus isSettedPos = SetTetrominoePos(0, 1);
 
-	BlockStatus res = { true, isSettedPos.coords };
+	BlockStatus res = { true, m_MovingBlock};
 	if (isSettedPos.located) return res;
 	
-	return { false, {0, 0} };
+	return { false, m_MovingBlock };
 }
 
 void Grid::UserMovement() {
@@ -223,8 +264,8 @@ void Grid::UserMovement() {
 void Grid::StartInputThread() {
 	inputThread = std::thread([this]() {
 		while (running) {
-			std::lock_guard<std::mutex> lock(mtx);  // Protege acceso
-			UserMovement();  // Llama al método en el hilo separado
+			std::lock_guard<std::mutex> lock(mtx); 
+			UserMovement();  
 			std::this_thread::sleep_for(std::chrono::milliseconds(SPEED));
 		}
 	});
@@ -232,5 +273,5 @@ void Grid::StartInputThread() {
 
 void Grid::StopInputThread() {
 	running = false;
-	if (inputThread.joinable()) inputThread.join();  // Espera a que termine
+	if (inputThread.joinable()) inputThread.join(); 
 }

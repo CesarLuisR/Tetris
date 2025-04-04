@@ -10,6 +10,7 @@ struct Edge {
 
 namespace View {
 	void RenderGrid(Grid& grid);
-	void RenderTime(std::chrono::steady_clock::time_point& time);
+	void RenderScoreAndSpeed(int score, double SPEED);
+	void RenderFinal(int score);
 	Edge GetEdge(int WWidth, int WHeight);
 }

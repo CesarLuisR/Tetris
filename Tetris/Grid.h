@@ -11,7 +11,7 @@
 
 struct BlockStatus {
 	bool located;
-	std::array<Coord, 4> coords{};
+	Tetrominoe block;
 };
 
 enum class GridState {
@@ -21,6 +21,11 @@ enum class GridState {
 struct AnalysisResult {
 	GridState state;
 	std::vector<int> rows;
+};
+
+struct PlacedBlock {
+	BlockType type;
+	Coord coords;
 };
 
 class Grid {
@@ -42,21 +47,24 @@ public:
 	void StopInputThread();
 
 public:
-	std::vector<Coord> m_PlacedCoords;
+	std::vector<Tetrominoe> m_PlacedBlocks;
 
-	const AnalysisResult& Analyze();
+	const AnalysisResult Analyze();
 	const GridBlock& GetGridData(int i, int j);
 	const Coord& GetGridRefPoint();
 	const Tetrominoe& CreateBlock();
-	const BlockStatus& NaturalMovement();
+	BlockStatus NaturalMovement(const Tetrominoe& block);
 
+	void RowCleaning(const std::vector<int>& rows);
+	void UpdatePlacedBlocks(const std::vector<int>& rows);
 	void UserMovement();
 	void RotateBlock();
 	void CleanAll();
 
-private:
+public:
 	bool AbleToSet(int col, int row);
-	void SetPos(int x, int y, const BlockType& type, const std::string& color);
+	void SetPos(int x, int y, const BlockType& type, const std::string& color, int id);
 	const BlockStatus& SetTetrominoePos(int x, int y);
-	void CreateBorders();
+	void InitMap();
+	void UpdateGrid();
 };

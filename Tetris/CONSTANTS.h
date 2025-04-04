@@ -1,7 +1,8 @@
 #pragma once
 
-#define GRID_ROWS 28 
-#define GRID_COLS 28
+#define GRID_ROWS 28
+#define GRID_COLS 8
 
 // Speed in milliseconds
-#define SPEED 100
+static constexpr int INIT_SPEED = 200;
+static int SPEED = INIT_SPEED; 

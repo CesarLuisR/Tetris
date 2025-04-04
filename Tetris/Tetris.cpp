@@ -4,9 +4,13 @@
 #include "ConsoleUtils.h"
 #include <chrono>
 #include <thread>
+#include <cmath>
 #include "CONSTANTS.h"
 
 int main() {
+	std::cout << "Press any letter to start" << std::endl;
+	std::cin.get();
+
 	// Create grid and score
 	ConsoleSize cSize = GetConsoleSize();
 	Edge edge = View::GetEdge(cSize.width, cSize.height);
@@ -14,26 +18,75 @@ int main() {
 	Coord refPoint = { edge.InitX, edge.InitY };
 	Grid grid(refPoint);
 
-	int score = 0;
-
-	// Start time
-	auto timer = std::chrono::high_resolution_clock::now();
-
 	// Hide the cursor
 	std::cout << "\033[?25l"; 
 
 	// Create the thread for concurrent movement
 	grid.StartInputThread();
 
+	unsigned long long int score = 0;
+
 	while (true) {
-		const AnalysisResult& result = grid.Analyze();
+		// Speed manager
+		const unsigned int max = 500;  
+		double speedManager = 0.5 + (0.5 * (max - score) / max);
+		SPEED = std::round(speedManager * INIT_SPEED);
+
+		// render score
+		View::RenderScoreAndSpeed(score, speedManager);
+
+		// grid analysis
+		const AnalysisResult result = grid.Analyze();
 
 		if (result.state == GridState::End) {
-			continue;
+			View::RenderFinal(score);
+			std::cin.get();
+			return 0;
 		}
 
 		if (result.state == GridState::RowCompleted) {
-			std::cout << "GRID COMPLETED" << std::endl;
+			// score manager
+			score += pow(4, result.rows.size());
+
+			// Deleting row and updating blocks structure
+			grid.RowCleaning(result.rows);
+			grid.UpdatePlacedBlocks(result.rows);
+			grid.UpdateGrid();
+
+			// Choose from which row start gravity
+			// Trying to get the lowest row possible to avoid floating blocks
+			int init = result.rows[0] + 1 > GRID_ROWS - 1
+				? result.rows[0] + 2 >  GRID_ROWS - 1
+					? result.rows[0] + 2
+					: result.rows[0] + 1
+				: result.rows[0];
+
+			// Apply gravity by order of blocks
+			// Takes the lowest rows and look for the blocks down there
+			for (int i = init; i > -1; i--) {
+				if (i == 0 || i == GRID_ROWS - 1) continue;
+
+				for (int j = 0; j < GRID_COLS; j++) {
+					if (j == 0 || j == GRID_COLS - 1) continue;
+
+					int id = grid.GetGridData(i, j).cellId;
+
+					for (auto& block : grid.m_PlacedBlocks) {
+						if (block.blockId != id) continue;
+
+						while (true) {
+							std::this_thread::sleep_for(std::chrono::milliseconds(SPEED/4));
+							BlockStatus state = grid.NaturalMovement(block);
+							block = state.block;
+							View::RenderGrid(grid);
+
+							if (state.located) break;
+						}
+						break;
+					}
+				}
+			}
+
 			continue;
 		}
 
@@ -41,18 +94,15 @@ int main() {
 			const Tetrominoe& block = grid.CreateBlock();
 
 			while (true) {
-				std::this_thread::sleep_for(std::chrono::milliseconds(SPEED)); 
-				BlockStatus status = grid.NaturalMovement();
+				std::this_thread::sleep_for(std::chrono::milliseconds(SPEED));
+				BlockStatus status = grid.NaturalMovement(block);
 
 				View::RenderGrid(grid);
 				if (status.located) {
-					for (Coord coord : status.coords) 
-						grid.m_PlacedCoords.emplace_back(coord);
+					grid.m_PlacedBlocks.emplace_back(status.block);
 					break;
 				}
 			}
-
-			continue;
 		}
 	}
 
@@ -61,26 +111,4 @@ int main() {
 
 	// Show cursor
 	std::cout << "\033[?25h";
-
-	//while (true) {
-	//	GridState state = Grid.Analyze();
-
-	//	if (state == GridState::End) {
-	//		FinalScreen();
-	//		break;
-	//	}
-	//	else if (state == GridState::RowElimination) {
-	//		Grid.DeleteRow(x);
-	//	}
-	//	else if (state == GridState::Normal) {
-	//		Block block();
-	//		Grid.CreateMovingBlock(block);
-
-	//		std::thread worker(block.NaturalMovement);
-	//		block.UserMovement();
-	//	}
-
-	//	Render();
-	//}
-
 }

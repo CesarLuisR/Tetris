@@ -44,7 +44,24 @@ namespace View {
 		}
 	}
 
-	void RenderTime(std::chrono::steady_clock::time_point& time) {
-		//std::cout << time << "\n";
+	void RenderScoreAndSpeed(int score, double SPEED) {
+		ConsoleSize cSize = GetConsoleSize();
+		int x = cSize.width * 0.75;
+		int y = cSize.height / 2;
+		double xSpeed = ((SPEED - 1)/-1) + 1;
+		GoTo(x, y - 2);
+		std::cout << "SCORE: " << score;
+		GoTo(x, y);
+		std::cout << "SPEED: x" << xSpeed;
+	}
+
+	void RenderFinal(int score) {
+		std::system("cls");
+		ConsoleSize cSize = GetConsoleSize();
+		int x = (cSize.width / 2) - 5;
+		int y = (cSize.height / 2) - 2;
+		GoTo(x, y);
+
+		std::cout << "FINAL SCORE: " << score << std::endl;
 	}
 }

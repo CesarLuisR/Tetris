@@ -3,6 +3,7 @@
 #include <string>
 #include <cstdint>
 #include <array>
+#include <vector>
 
 struct Coord {
 	int x, y;
@@ -24,21 +25,23 @@ private:
 	BlockType m_Type;
 
 public:
-	static const std::array<const char*, 7> blockColors;
+	static const std::array<const char*, 20> blockColors;
 	std::string m_Color;
+	int cellId;
 
 public:
 	GridBlock(BlockType m_Type) : m_Type(m_Type), m_Color("\033[0m") {};
-	GridBlock(BlockType m_Type, std::string color);
+	GridBlock(BlockType m_Type, std::string color, int id);
 	GridBlock() : m_Type(BlockType::None), m_Color("\033[0m") {};
 
 	BlockType GetType() const;
+	void SetType(BlockType type);
 };
 
 class Tetrominoe : public GridBlock {
 private:
-	Shape m_Pos;
 	Coord m_AxisLocation;
+	std::vector<Coord> m_Pos;
 
 	static constexpr std::array<Shape, 7> tetrominoes = {
 		Shape{ Coord{0, 0}, Coord{1, 0}, Coord{-1, 0}, Coord{2, 0} },  // I
@@ -51,15 +54,18 @@ private:
 	};
 
 public:
-	Tetrominoe(std::string color, Shape pos, Coord axisLocation);
+	Tetrominoe(std::string color, std::vector<Coord> m_Pos, Coord axisLocation);
 	Tetrominoe();
 
 public:
+	static int idCounter;
+	int blockId;
+
 	static Tetrominoe CreateRandom(const Coord& m_AxisLocation);
 	Coord GetAxisLocation() const;
 	void SetAxisLocation(const Coord& newLoc);
-	std::array<Coord, 4> GetShape() const;
-	void SetShape(const std::array<Coord, 4>& newShape);
-	std::array<Coord, 4> RotationCoords();
+	std::vector<Coord> GetShape() const;
+	void SetShape(const std::vector<Coord>& newShape);
+	std::vector<Coord> RotationCoords();
 };
 
