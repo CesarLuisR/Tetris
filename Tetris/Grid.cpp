@@ -278,7 +278,10 @@ void Grid::UserMovement() {
 void Grid::StartInputThread() {
 	inputThread = std::thread([this]() {
 		while (running) {
-			std::lock_guard<std::mutex> lock(mtx); 
+			// It this lock good or bad? It depends on what do you want the mechanics to be
+			// Without the lock the movement is more fluid cause you can move the block several times while is falling a row
+			// But this can lead to bugs, no???
+			//std::lock_guard<std::mutex> lock(mtx); 
 			UserMovement();  
 			std::this_thread::sleep_for(std::chrono::milliseconds(SPEED));
 		}

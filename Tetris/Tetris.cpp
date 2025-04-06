@@ -29,7 +29,9 @@ int main() {
 	while (true) {
 		// Speed manager
 		const unsigned int max = 500;  
-		double speedManager = 0.5 + (0.5 * (max - score) / max);
+		double speedManager = 0.5;
+		if (score <= 500)
+			speedManager = 0.5 + (0.5 * (max - score) / max);
 		SPEED = std::round(speedManager * INIT_SPEED);
 
 		// render score
