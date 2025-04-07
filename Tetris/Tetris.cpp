@@ -8,11 +8,11 @@
 #include "CONSTANTS.h"
 
 int main() {
-	std::cout << "Press any letter to start" << std::endl;
-	std::cin.get();
+	ConsoleSize cSize = GetConsoleSize();
+
+	View::RenderInit(cSize);
 
 	// Create grid and score
-	ConsoleSize cSize = GetConsoleSize();
 	Edge edge = View::GetEdge(cSize.width, cSize.height);
 
 	Coord refPoint = { edge.InitX, edge.InitY };
@@ -35,13 +35,14 @@ int main() {
 		SPEED = std::round(speedManager * INIT_SPEED);
 
 		// render score
-		View::RenderScoreAndSpeed(score, speedManager);
+		View::RenderScoreAndSpeed(score, speedManager, cSize);
 
 		// grid analysis
 		const AnalysisResult result = grid.Analyze();
 
 		if (result.state == GridState::End) {
-			View::RenderFinal(score);
+			View::RenderFinal(score, cSize);
+			grid.StopInputThread();
 			std::cin.get();
 			return 0;
 		}

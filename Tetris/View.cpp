@@ -44,8 +44,7 @@ namespace View {
 		}
 	}
 
-	void RenderScoreAndSpeed(int score, double SPEED) {
-		ConsoleSize cSize = GetConsoleSize();
+	void RenderScoreAndSpeed(int score, double SPEED, ConsoleSize cSize) {
 		int x = cSize.width * 0.75;
 		int y = cSize.height / 2;
 		double xSpeed = ((SPEED - 1)/-1) + 1;
@@ -55,13 +54,19 @@ namespace View {
 		std::cout << "SPEED: x" << xSpeed;
 	}
 
-	void RenderFinal(int score) {
+	void RenderFinal(int score, ConsoleSize cSize) {
 		std::system("cls");
-		ConsoleSize cSize = GetConsoleSize();
 		int x = (cSize.width / 2) - 5;
 		int y = (cSize.height / 2) - 2;
 		GoTo(x, y);
 
 		std::cout << "FINAL SCORE: " << score << std::endl;
+	}
+
+	void RenderInit(ConsoleSize cSize) {
+		GoTo(cSize.width/2 - 10, cSize.height/2 - 2);
+		std::cout << "Press any letter to start" << std::endl;
+		std::cin.get();
+		std::system("cls");
 	}
 }
