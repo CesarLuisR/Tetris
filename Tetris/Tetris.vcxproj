@@ -130,6 +130,7 @@
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="ConsoleUtils.cpp" />
     <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="PreviewBlockGrid.cpp" />
     <ClCompile Include="View.cpp" />
     <ClCompile Include="Tetris.cpp" />
   </ItemGroup>
@@ -138,6 +139,7 @@
     <ClInclude Include="ConsoleUtils.h" />
     <ClInclude Include="CONSTANTS.h" />
     <ClInclude Include="Grid.h" />
+    <ClInclude Include="PreviewBlockGrid.h" />
     <ClInclude Include="View.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

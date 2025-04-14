@@ -38,24 +38,37 @@ const std::array<const char*, 20> GridBlock::blockColors = {
 
 // Tetrominoe
 int Tetrominoe::idCounter = 0;
+int Tetrominoe::randomCounter = 0;
+std::array<Tetrominoe, RANDOM_BLOCKS_COUNT> Tetrominoe::randomBlocks;
 
 Tetrominoe::Tetrominoe(std::string color, std::vector<Coord> pos, Coord axisLocation)
 	: GridBlock(BlockType::TetrominoeBlock, color, idCounter), m_Pos(pos), m_AxisLocation(axisLocation), blockId(idCounter++) {}
 
 Tetrominoe::Tetrominoe() {}
 
-Tetrominoe Tetrominoe::CreateRandom(const Coord& m_AxisLocation) {
+void Tetrominoe::GenerateRandomSequence() {
 	static std::random_device rd;
 	static std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> colorDist(0, 19);
 	std::uniform_int_distribution<int> formDist(0, 6);
 
-	std::string randomColor = blockColors[colorDist(gen)];
-	Shape randomForm = tetrominoes[formDist(gen)];
+	for (int i = 0; i < RANDOM_BLOCKS_COUNT; i++) {
+		std::string randomColor = blockColors[colorDist(gen)];
+		Shape randomForm = tetrominoes[formDist(gen)];
 
-	std::vector<Coord> positions = { randomForm.axis, randomForm.right, randomForm.left, randomForm.particular };
+		std::vector<Coord> positions = { randomForm.axis, randomForm.right, randomForm.left, randomForm.particular };
+		randomBlocks[i] = Tetrominoe(randomColor, positions, {0, 0});
+	}
+}
 
-	return Tetrominoe(randomColor, positions, m_AxisLocation);
+Tetrominoe Tetrominoe::CreateRandom(const Coord& m_AxisLocation) {
+	Tetrominoe block = randomBlocks[randomCounter];
+	block.m_AxisLocation = m_AxisLocation;
+
+	randomCounter++;
+	if (randomCounter == RANDOM_BLOCKS_COUNT) randomCounter = 0;
+
+	return block;
 }
 
 Coord Tetrominoe::GetAxisLocation() const {

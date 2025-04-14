@@ -1,6 +1,8 @@
 #include <iostream>
 #include "View.h"
 #include "Grid.h"
+#include "Block.h"
+#include "PreviewBlockGrid.h"
 #include "ConsoleUtils.h"
 #include <chrono>
 #include <thread>
@@ -11,12 +13,15 @@ int main() {
 	ConsoleSize cSize = GetConsoleSize();
 
 	View::RenderInit(cSize);
+	Tetrominoe::GenerateRandomSequence();
 
 	// Create grid and score
 	Edge edge = View::GetEdge(cSize.width, cSize.height);
 
 	Coord refPoint = { edge.InitX, edge.InitY };
 	Grid grid(refPoint);
+	PreviewBlockGrid previewGrid(refPoint);
+	PreviewBlockGrid nextBlock(refPoint);
 
 	// Hide the cursor
 	std::cout << "\033[?25l"; 
@@ -94,10 +99,29 @@ int main() {
 		}
 
 		if (result.state == GridState::Continue) {
+			// Render empty grid
+			View::RenderGrid(grid);
+
+			// create tetrominoe and set the preview
 			const Tetrominoe& block = grid.CreateBlock();
+			previewGrid.InitGrid();
+			previewGrid.SetBlock(block);
+
+			// Set the next block grid
+			nextBlock.SetBlock(block.randomBlocks[block.randomCounter]);
+
+			// Render the preview and next block grid
+			View::RenderOutOfGridBlock(previewGrid);
+			View::RenderNextBlock(nextBlock, cSize);
+			std::this_thread::sleep_for(std::chrono::milliseconds(SPEED * 3));
+
+			// Clean the preview grid
+			previewGrid.InitGrid();
+			View::RenderOutOfGridBlock(previewGrid);
 
 			while (true) {
 				std::this_thread::sleep_for(std::chrono::milliseconds(SPEED));
+				grid.PreviewFinalPos();
 				BlockStatus status = grid.NaturalMovement(block);
 
 				View::RenderGrid(grid);

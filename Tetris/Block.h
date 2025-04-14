@@ -4,6 +4,9 @@
 #include <cstdint>
 #include <array>
 #include <vector>
+#include "CONSTANTS.h"
+
+//#define RANDOM_BLOCKS_COUNT 30
 
 struct Coord {
 	int x, y;
@@ -17,7 +20,7 @@ struct Shape {
 };
 
 enum class BlockType {
-	None, Border, TetrominoeBlock
+	None, Border, TetrominoeBlock, PreviewBlock
 };
 
 class GridBlock {
@@ -61,6 +64,10 @@ public:
 	static int idCounter;
 	int blockId;
 
+	static int randomCounter;
+	static std::array<Tetrominoe, RANDOM_BLOCKS_COUNT> randomBlocks;
+
+	static void GenerateRandomSequence();
 	static Tetrominoe CreateRandom(const Coord& m_AxisLocation);
 	Coord GetAxisLocation() const;
 	void SetAxisLocation(const Coord& newLoc);

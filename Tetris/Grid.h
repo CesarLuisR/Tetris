@@ -55,6 +55,8 @@ public:
 	const Tetrominoe& CreateBlock();
 	BlockStatus NaturalMovement(const Tetrominoe& block);
 
+	void PreviewFinalPos();
+
 	void RowCleaning(const std::vector<int>& rows);
 	void UpdatePlacedBlocks(const std::vector<int>& rows);
 	void UserMovement();

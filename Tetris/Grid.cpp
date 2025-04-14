@@ -106,7 +106,9 @@ void Grid::UpdateGrid() {
 }
 
 bool Grid::AbleToSet(int col, int row) {
-	if (GetGridData(col, row).GetType() == BlockType::None) return true;
+	if (GetGridData(col, row).GetType() == BlockType::None 
+		|| GetGridData(col, row).GetType() == BlockType::PreviewBlock) 
+			return true;
 
 	if (GetGridData(col, row).GetType() == BlockType::Border) return false;
 
@@ -227,8 +229,10 @@ const Tetrominoe& Grid::CreateBlock() {
 	Tetrominoe tetro = Tetrominoe::CreateRandom(relativeCoord);
 	m_MovingBlock = tetro;
 
-	// Put the random block in the grid
+	// Create the block and put it out of the grid
 	auto coords = m_MovingBlock.GetShape();
+
+	// Put the random block in the grid
 	for (const Coord& coord : coords) {
 		int x = m_MovingBlock.GetAxisLocation().x + coord.x;
 		int y = m_MovingBlock.GetAxisLocation().y + coord.y;
@@ -246,9 +250,41 @@ BlockStatus Grid::NaturalMovement(const Tetrominoe& block) {
 	BlockStatus isSettedPos = SetTetrominoePos(0, 1);
 
 	BlockStatus res = { true, m_MovingBlock};
-	if (isSettedPos.located) return res;
+	if (isSettedPos.located) {
+		SetTetrominoePos(0, 0);
+		return res;
+	}
 	
 	return { false, m_MovingBlock };
+}
+
+// Working on it
+// Hay que pensarlo mejor por ahora
+void Grid::PreviewFinalPos() {
+	Tetrominoe previewBlock = Tetrominoe("", m_MovingBlock.GetShape(), m_MovingBlock.GetAxisLocation());
+
+	for (int i = 0; i < GRID_ROWS; i++) {
+		for (int j = 0; j < GRID_COLS; j++) {
+			if (GetGridData(i, j).GetType() == BlockType::PreviewBlock)
+				Grid::SetPos(i, j, BlockType::None, "", -1);
+		}
+	}
+
+	for (int i = 1; i < GRID_ROWS; i++) {
+		bool isAbleToSet = false;
+		int x = m_MovingBlock.GetAxisLocation().x;
+
+		for (Coord cd : m_MovingBlock.GetShape()) {
+			isAbleToSet = AbleToSet(i + cd.y + 1, cd.x + x);
+			if (isAbleToSet == false) break;
+		}
+
+		if (!isAbleToSet) {
+			for (Coord cd : m_MovingBlock.GetShape()) 
+				SetPos(i + cd.y, x + cd.x, BlockType::PreviewBlock, "", m_MovingBlock.blockId);
+			break;
+		}
+	}
 }
 
 void Grid::UserMovement() {
