@@ -263,6 +263,7 @@ BlockStatus Grid::NaturalMovement(const Tetrominoe& block) {
 	return { false, m_MovingBlock };
 }
 
+// This could be much better but it works xd and it is a tetris game so...
 void Grid::PreviewFinalPos() {
 	Tetrominoe previewBlock = Tetrominoe("", m_MovingBlock.GetShape(), m_MovingBlock.GetAxisLocation());
 
@@ -273,7 +274,8 @@ void Grid::PreviewFinalPos() {
 		}
 	}
 
-	for (int i = 1; i < GRID_ROWS; i++) {
+	// i = 2 for rendering the preview block from the 2nd row
+	for (int i = 2; i < GRID_ROWS; i++) {
 		bool isAbleToSet = false;
 		int x = m_MovingBlock.GetAxisLocation().x;
 
