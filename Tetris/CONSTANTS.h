@@ -1,7 +1,7 @@
 #pragma once
 
 #define GRID_ROWS 22
-#define GRID_COLS 10
+#define GRID_COLS 12
 
 #define RANDOM_BLOCKS_COUNT 30
 

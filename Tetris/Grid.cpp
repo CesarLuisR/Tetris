@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Grid.h"
 
 // Some context:
@@ -106,19 +105,24 @@ void Grid::UpdateGrid() {
 }
 
 bool Grid::AbleToSet(int col, int row) {
-	if (GetGridData(col, row).GetType() == BlockType::None 
+	if (GetGridData(col, row).GetType() == BlockType::None
 		|| GetGridData(col, row).GetType() == BlockType::PreviewBlock) 
 			return true;
 
-	if (GetGridData(col, row).GetType() == BlockType::Border) return false;
+	if (GetGridData(col, row).GetType() == BlockType::Border) 
+		return false;
 
-	if (GetGridData(col, row).cellId != m_MovingBlock.blockId) return false;
+	if (GetGridData(col, row).cellId != m_MovingBlock.blockId) 
+		return false;
 
 	return true;
 }
 
 void Grid::SetPos(int col, int row, const BlockType& type, const std::string& color, int blockId) {
-	m_GridData[col][row] = GridBlock(type, color, blockId);
+	if (col >= 0 && col < GRID_ROWS &&
+		row >= 0 && row < GRID_COLS) {
+		m_GridData[col][row] = GridBlock(type, color, blockId);
+	}
 }
 
 void Grid::InitMap() {
@@ -186,6 +190,7 @@ const BlockStatus& Grid::SetTetrominoePos(int row, int col) {
 void Grid::RotateBlock() {
 	auto rotationCoords = m_MovingBlock.RotationCoords();
 	bool isAbleToSet = true;
+
 	for (const Coord& coord : rotationCoords) {
 		int x = m_MovingBlock.GetAxisLocation().x + coord.x;
 		int y = m_MovingBlock.GetAxisLocation().y + coord.y;
@@ -258,8 +263,6 @@ BlockStatus Grid::NaturalMovement(const Tetrominoe& block) {
 	return { false, m_MovingBlock };
 }
 
-// Working on it
-// Hay que pensarlo mejor por ahora
 void Grid::PreviewFinalPos() {
 	Tetrominoe previewBlock = Tetrominoe("", m_MovingBlock.GetShape(), m_MovingBlock.GetAxisLocation());
 
@@ -314,10 +317,8 @@ void Grid::UserMovement() {
 void Grid::StartInputThread() {
 	inputThread = std::thread([this]() {
 		while (running) {
-			// We can do a lot of modifications down here
-			std::lock_guard<std::mutex> lock(mtx); 
+			// std::lock_guard<std::mutex> lock(mtx); 
 			UserMovement();  
-			std::this_thread::sleep_for(std::chrono::milliseconds(SPEED/2));
 		}
 	});
 }
