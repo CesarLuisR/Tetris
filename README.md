@@ -1,4 +1,4 @@
-🎮 Tetris Clone  
+## 🎮 Tetris Clone  
 A simple Tetris clone built in C++ because why not? Blocks fall, lines vanish, and time disappears. It’s everything you’d expect from a proper time sink.
 
 ## 🚀 Build Instructions  
