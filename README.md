@@ -22,7 +22,7 @@ g++ *.cpp -o tetris
 
 🕹️ Controls
 - ↑ – Rotate block
-- ↓ – Alocate block
+- ↓ – Place block
 - → – Move block right
 - ← – Move block left
 
