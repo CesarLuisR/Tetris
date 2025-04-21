@@ -10,15 +10,13 @@ This project was developed in C++ and runs best on Windows environments. Here’
 3. Go to **Build > Build Solution** or press `Ctrl + Shift + B`.  
 4. Run the project with `Debug > Start Without Debugging` (`Ctrl + F5`).  
 
-### 💻 Or with a good ol’ terminal (Windows only)  
+### 💻 Or with a good ol’ terminal  
 You can compile the project with `g++` if you have [MinGW](https://sourceforge.net/projects/mingw/) or [MSYS2](https://www.msys2.org/) installed:
 
 ```bash
 g++ *.cpp -o tetris
+./tetris
 ```
-  
-  ```⚠️ Nice try running this on Linux or macOS environments :)```
-- It was definitely born and raised on Windows. Cross-platform? Maybe later...
 
 🕹️ Controls
 - ↑ – Rotate block
