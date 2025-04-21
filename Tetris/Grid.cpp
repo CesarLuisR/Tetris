@@ -293,9 +293,11 @@ void Grid::PreviewFinalPos() {
 }
 
 void Grid::UserMovement() {
+	int key = GetKey();
 	BlockStatus isSettedPos;
 
-	if (GetKey() == -32) {
+#ifdef _WIN32
+	if (key == -32) {
 		switch (GetKey()) {
 		case 72: // Up
 			RotateBlock();
@@ -303,7 +305,7 @@ void Grid::UserMovement() {
 		case 80: // Down
 			while (true) {
 				isSettedPos = SetTetrominoePos(0, 1);
-				if (isSettedPos.located == true) break;
+				if (isSettedPos.located) break;
 			}
 			break;
 		case 77: // Right
@@ -314,6 +316,26 @@ void Grid::UserMovement() {
 			break;
 		}
 	}
+
+#else // Linux o cualquier otro sistema
+	switch (key) {
+	case 65: // Up
+		RotateBlock();
+		break;
+	case 66: // Down
+		while (true) {
+			isSettedPos = SetTetrominoePos(0, 1);
+			if (isSettedPos.located) break;
+		}
+		break;
+	case 67: // Right
+		SetTetrominoePos(1, 0);
+		break;
+	case 68: // Left
+		SetTetrominoePos(-1, 0);
+		break;
+	}
+#endif
 }
 
 void Grid::StartInputThread() {

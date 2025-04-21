@@ -57,7 +57,7 @@ namespace View {
 	}
 
 	void RenderFinal(int score, ConsoleSize cSize) {
-		std::system("cls");
+		ClearScreen();
 		int x = (cSize.width / 2) - 7;
 		int y = (cSize.height / 2);
 		GoTo(x, y);
@@ -69,7 +69,7 @@ namespace View {
 		GoTo(cSize.width / 2 - 10, cSize.height / 2);
 		std::cout << "Press any letter to start";
 		std::cin.get();
-		std::system("cls");
+		ClearScreen();
 	}
 
 	void RenderNextBlock(PreviewBlockGrid grid, ConsoleSize cSize) {

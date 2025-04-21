@@ -19,3 +19,4 @@ struct ConsoleSize {
 ConsoleSize GetConsoleSize();
 void GoTo(int x, int y);
 char GetKey();
+void ClearScreen();

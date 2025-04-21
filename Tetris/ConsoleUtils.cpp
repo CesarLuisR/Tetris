@@ -55,3 +55,11 @@ char GetKey() {
 	char c = _getch();
 	return c;
 }
+
+void ClearScreen() {
+#ifdef _WIN32
+	std::system("cls");
+#else
+	std::system("clear");
+#endif
+}
