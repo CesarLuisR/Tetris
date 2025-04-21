@@ -66,7 +66,7 @@ public:
 public:
 	bool AbleToSet(int col, int row);
 	void SetPos(int x, int y, const BlockType& type, const std::string& color, int id);
-	const BlockStatus& SetTetrominoePos(int x, int y);
+	const BlockStatus SetTetrominoePos(int x, int y);
 	void InitMap();
 	void UpdateGrid();
 };

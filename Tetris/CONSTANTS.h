@@ -6,5 +6,5 @@
 #define RANDOM_BLOCKS_COUNT 30
 
 // Speed in milliseconds
-static constexpr int INIT_SPEED = 200;
-static int SPEED = INIT_SPEED; 
+constexpr int INIT_SPEED = 200;
+extern int SPEED; 

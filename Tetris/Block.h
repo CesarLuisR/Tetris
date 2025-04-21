@@ -43,8 +43,8 @@ public:
 
 class Tetrominoe : public GridBlock {
 private:
-	Coord m_AxisLocation;
-	std::vector<Coord> m_Pos;
+	std::vector<Coord> m_Pos = {};
+	Coord m_AxisLocation = {};
 
 	static constexpr std::array<Shape, 7> tetrominoes = {
 		Shape{ Coord{0, 0}, Coord{1, 0}, Coord{-1, 0}, Coord{2, 0} },  // I

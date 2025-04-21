@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="ConsoleUtils.cpp" />
+    <ClCompile Include="Constants.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="PreviewBlockGrid.cpp" />
     <ClCompile Include="View.cpp" />

@@ -42,7 +42,10 @@ int Tetrominoe::randomCounter = 0;
 std::array<Tetrominoe, RANDOM_BLOCKS_COUNT> Tetrominoe::randomBlocks;
 
 Tetrominoe::Tetrominoe(std::string color, std::vector<Coord> pos, Coord axisLocation)
-	: GridBlock(BlockType::TetrominoeBlock, color, idCounter), m_Pos(pos), m_AxisLocation(axisLocation), blockId(idCounter++) {}
+	: GridBlock(BlockType::TetrominoeBlock, color, idCounter),
+	m_Pos(pos), 
+	m_AxisLocation(axisLocation),
+	blockId(idCounter++) {}
 
 Tetrominoe::Tetrominoe() {}
 
@@ -84,8 +87,6 @@ std::vector<Coord> Tetrominoe::GetShape() const {
 }
 
 std::vector<Coord> Tetrominoe::RotationCoords() {
-	int temp_x, temp_y;
-
 	std::vector<Coord> rotated;
 	for (const auto& coord : m_Pos) {
 		rotated.push_back({ -coord.y, coord.x });

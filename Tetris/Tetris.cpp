@@ -32,6 +32,9 @@ int main() {
 	unsigned long long int score = 0;
 
 	while (true) {
+		// Move cursor to the top of the screen for rewriting
+		std::cout << "\033[H";
+
 		// Speed manager
 		const unsigned int max = 500;  
 		double speedManager = 0.5;
@@ -83,7 +86,7 @@ int main() {
 						if (block.blockId != id) continue;
 
 						while (true) {
-							std::this_thread::sleep_for(std::chrono::milliseconds(SPEED/4));
+							std::this_thread::sleep_for(std::chrono::milliseconds(SPEED/6));
 							BlockStatus state = grid.NaturalMovement(block);
 							block = state.block;
 							View::RenderGrid(grid);

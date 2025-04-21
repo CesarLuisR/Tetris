@@ -144,7 +144,7 @@ void Grid::CleanAll() {
 	}
 }
 
-const BlockStatus& Grid::SetTetrominoePos(int row, int col) {
+const BlockStatus Grid::SetTetrominoePos(int row, int col) {
 	auto coords = m_MovingBlock.GetShape();
 
 	bool isAbleToSet = true;
